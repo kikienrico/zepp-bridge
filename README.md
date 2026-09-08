@@ -38,7 +38,7 @@ Apple Watch but the trend is right and Bevel builds its own baseline anyway.
 
 ## 1. Get the app token
 
-Two ways. Try the first, it needs no proxy.
+Two ways. I reccomend using the 2nd one.
 
 ### huami-token (email + password)
 
@@ -57,24 +57,16 @@ plus the user id and region.
 If the login fails (Zepp keeps changing it) make sure you're on the latest version,
 otherwise fall back to the proxy.
 
-### Proxy capture (Proxyman / mitmproxy)
+### (Reccomeneded) Proxy capture (Proxyman / mitmproxy)
 
 Sniff the Zepp app's own traffic and read the token out of it. More fiddly but
 always works, and it also tells you your region host.
 
-On the computer, install Proxyman (free tier is fine), it listens on port 9090.
-Note the computer's local IP.
-
-On the phone:
-- Wi-Fi settings -> (i) on your network -> Configure Proxy -> Manual, server = the
-  computer's IP, port = 9090.
-- In Safari open `proxyman.io/mitmssl` (or `mitm.it` for mitmproxy) and install the
-  cert profile. Then General -> VPN & Device Management -> install it, AND General
-  -> About -> Certificate Trust Settings -> toggle it on. People miss that second
-  toggle and then HTTPS won't decrypt.
+On iPhone:
+- Setup Proxyman, it will guide you trough a setup (Install and trust the certificate it will let you download).
 - Open Zepp, go to the HRV / temperature screens, scroll around.
 
-Back on the computer, filter by `zepp.com`, open a request to
+Back on the app, filter by `api-mifit-XXX.zepp.com`, open a request to
 `api-mifit-XXX.zepp.com`, look at the headers and copy the full `apptoken` value.
 The user id is the number in the `/users/<id>/` path. The host is that domain.
 
@@ -98,19 +90,16 @@ is right and the token's the problem; no response usually means wrong host.
 ## 3. Zepp CLI
 
 This rides on top of [zepp-health-cli](https://github.com/m4ary/zepp-health-cli),
-which does the API calls. Clone the original, don't re-upload it:
+which does the API calls. Clone it:
 
 ```bash
 git clone https://github.com/m4ary/zepp-health-cli.git zepp-health
 cd zepp-health
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp config.example.json config.json   # fill in token / user_id / host
+cp config.json config.json   # fill in token / user_id / host
 python3 zepp_health.py summary        # should print your training load
 ```
-
-Paste the whole token. If you copied it from something that showed `abc…xyz`, the
-`…` ends up in the string and it fails. No spaces, no line breaks.
 
 ## 4. The bridge
 
@@ -120,6 +109,7 @@ cp zepp_bridge.py ~/zepp-bridge/
 nano ~/zepp-bridge/zepp_bridge.py   # set paths, LOCAL_TZ, SHARED_SECRET
 ```
 
+`SHARED_SECRET`is a password you have to set, that guards the bridge's local server. When it's running it listens on your network, so the secret stops anyone else on the same Wi-Fi from hitting the endpoints and reading your HRV data.
 For `SHARED_SECRET` use letters and numbers only. A `!` or `&` in it breaks inside
 the URL and you get "unauthorized" that looks like a wrong password (spent a while
 on that one).
@@ -155,14 +145,22 @@ Hourly pull, `crontab -e`:
 Test from the phone browser:
 
 ```
-http://BOX_IP:8765/hrv?since=1&secret=YOUR_SECRET
+http://BOX_IP:8765/hrv?since=1&secret=YOUR_SECRET_SHARED
 ```
 
 You should get JSON with a `samples` array. Each sample has `rmssd` and `local`.
 
 ## 6. The Shortcut
 
-Build it by hand (if you share yours via iCloud, blank the IP and secret first).
+You can either build it by hand or copy my shortcut.
+
+### 1. My shortcut
+
+You can download it here [SHORTCUT](https://www.icloud.com/shortcuts/5f2d15a50824430e9d5259ba08644f0a), remember to change the first two text boxes.
+- First Text Box: http://BOX_IP:8765 -> needs to be changed to the device is hosting your local server, in my case i changed it to my Raspberry Pi's IP.
+- Second Text Box: SHARED_SECRED -> needs to be change to match the shared key password you set up in your zepp_bridge.py file.
+
+### 2. Make it by hand
 
 Set two Text variables: `BaseURL` = `http://BOX_IP:8765`, and `Secret`.
 
@@ -210,6 +208,9 @@ editing.
 cursor already moved. Reset it:
 `sqlite3 ~/zepp-bridge/hrv.db "DELETE FROM meta WHERE k='acked_upto_ms';"`
 Or Health write permission is off.
+Keep it mind that by resetting the ack cursor you enable your device to pull all
+the data again, so use this only if no data was written to your device, otherwise 
+you'd end up with 2 entries of the sama data points.
 
 **everything logged at "now" or the wrong hour** - you used `iso` instead of
 `local`.
