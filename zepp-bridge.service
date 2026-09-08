@@ -1,0 +1,14 @@
+[Unit]
+Description=Zepp HRV bridge
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/zepp-bridge
+ExecStart=/home/pi/zepp-health/.venv/bin/python3 /home/pi/zepp-bridge/zepp_bridge.py serve
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
