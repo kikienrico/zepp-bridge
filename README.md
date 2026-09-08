@@ -157,8 +157,8 @@ You can either build it by hand or copy my shortcut.
 ### 1. My shortcut
 
 You can download it here [SHORTCUT](https://www.icloud.com/shortcuts/5f2d15a50824430e9d5259ba08644f0a), remember to change the first two text boxes.
-- First Text Box: http://BOX_IP:8765 -> needs to be changed to the device is hosting your local server, in my case i changed it to my Raspberry Pi's IP.
-- Second Text Box: SHARED_SECRED -> needs to be change to match the shared key password you set up in your zepp_bridge.py file.
+- First Text Box: http://BOX_IP:8765 -> needs to be changed to the device's IP that is hosting your local endpoint, in my case i changed it to my Raspberry Pi's IP.
+- Second Text Box: SHARED_SECRED -> needs to be changed to match the shared key password you set up in your zepp_bridge.py file.
 
 ### 2. Make it by hand
 
