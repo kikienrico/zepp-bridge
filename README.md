@@ -194,6 +194,18 @@ Run the Shortcut once by hand. First run writes 1000+ samples and takes a minute
 two, after that it's just the new night. Check Health -> Heart Rate Variability ->
 Show All Data, the points should sit at the right nighttime hours, then open Bevel.
 
+## 8. So what is the workflow
+
+To make it work you'll only need to open the Zepp app on your iPhone every day to sync data from your device to Zepp's cloud **BEFORE** the time you set in your automation.
+
+```
+You open Zepp App -> data uploads to Zepp's cloud -> your box pulls it hourly -> iOS Shortcut writes it to Apple Health -> Bevel reads it
+```
+
+Everything after the first step is automatic. The box pulls from Zepp's cloud every hour on its own, and the Shortcut runs at the time you set. So your only daily job is opening the Zepp app so last night's data actually reaches the cloud.
+
+One thing worth knowing, it doesn't matter if the Shortcut runs before you've synced on a given day. Thanks to the /ack cursor, nothing gets lost or duplicated — if there's no new data yet, that day's samples just get written on the next run. So a fixed midday automation is safe even when your wake-up time moves around. If you want the data in sooner on a given day, open Zepp when you wake up and run the Shortcut by hand.
+
 ## Troubleshooting
 
 **invalid token / 0102** - expired (get a new one), or wrong token type (the one
