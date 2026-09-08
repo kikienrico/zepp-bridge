@@ -66,7 +66,7 @@ On iPhone:
 - Setup Proxyman, it will guide you trough a setup (Install and trust the certificate it will let you download).
 - Open Zepp, go to the HRV / temperature screens, scroll around.
 
-Back on the app, filter by `api-mifit-XXX.zepp.com`, open a request to
+Back on the app, look for `api-mifit-XXX.zepp.com`, open a request to
 `api-mifit-XXX.zepp.com`, look at the headers and copy the full `apptoken` value.
 The user id is the number in the `/users/<id>/` path. The host is that domain.
 
